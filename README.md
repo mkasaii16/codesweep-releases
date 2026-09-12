@@ -2,7 +2,7 @@
 
 **codesweep** is a fast, cross-platform command-line tool for finding duplicate
 and structurally similar functions in TypeScript, JavaScript, Flutter/Dart,
-Kotlin, and Swift projects.
+Kotlin, Swift, Go, and C#/.NET projects.
 
 Built with Rust and Tree-sitter, codesweep compares syntax structure instead of
 plain text. Formatting, comments, and outer function names do not hide duplicated
@@ -28,6 +28,8 @@ logic.
 | Flutter / Dart | `flutter` or `dart` | `.dart` |
 | Kotlin | `kotlin` or `kt` | `.kt`, `.kts` |
 | Swift | `swift` | `.swift` |
+| Go | `go` or `golang` | `.go` |
+| C# / .NET | `csharp`, `cs`, `dotnet`, or `.net` | `.cs`, `.csx` |
 
 ## Download
 
@@ -134,6 +136,8 @@ codesweep ./web-app --language javascript
 codesweep ./flutter-app --language flutter
 codesweep ./android-app --language kotlin
 codesweep ./ios-app --language swift
+codesweep ./go-service --language go
+codesweep ./dotnet-app --language csharp
 ```
 
 Equivalent short language names:
@@ -144,6 +148,8 @@ codesweep ./javascript-app -lg js
 codesweep ./flutter-app -lg dart
 codesweep ./android-app -lg kt
 codesweep ./ios-app -lg swift
+codesweep ./go-service -lg golang
+codesweep ./dotnet-app -lg dotnet
 ```
 
 Find functions with at least 80% structural similarity:
@@ -257,7 +263,8 @@ codesweep . -ig generated -ig coverage -ig dist -ig build
 
 Duplicate code detector, code clone detector, similar function finder, static
 analysis CLI, TypeScript duplicate code, JavaScript duplicate code, Flutter Dart
-code quality, Kotlin refactoring tool, Swift duplicate functions, Tree-sitter,
+code quality, Kotlin refactoring tool, Swift duplicate functions, Go duplicate
+code, Golang static analysis, C# duplicate code, .NET code quality, Tree-sitter,
 Rust CLI, cross-platform developer tool.
 
 ---
