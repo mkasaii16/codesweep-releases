@@ -14,6 +14,7 @@ logic.
 
 - Detect exact structural duplicate functions.
 - Find near-duplicates with a configurable similarity threshold.
+- Search for a function by name and show only its duplicate implementations.
 - Parse source code accurately with Tree-sitter grammars.
 - Scan large projects using a small native CLI.
 - Ignore generated code, dependencies, and custom directories.
@@ -158,6 +159,29 @@ Find functions with at least 80% structural similarity:
 codesweep ./src --threshold 80
 ```
 
+Find exact duplicates of a specific function by name:
+
+```bash
+codesweep ./src --search calculateTotal
+codesweep ./src -s calculateTotal
+```
+
+Function-name search is case-insensitive and accepts partial names. When
+`--search` is used without `--token`, codesweep automatically lowers the token
+minimum from `30` to `1`, so short matching functions are not skipped. An
+explicit token value always takes precedence:
+
+```bash
+codesweep ./src -s calculateTotal -tk 10
+```
+
+Find implementations structurally similar to a specific function by combining
+search with a lower similarity threshold:
+
+```bash
+codesweep ./src -s calculateTotal -t 80
+```
+
 Include smaller functions and ignore generated directories:
 
 ```bash
@@ -176,13 +200,20 @@ codesweep ./lib -lg flutter -tk 20 -t 75 -ig generated -ig .dart_tool
 codesweep [FOLDER] [OPTIONS]
 
 -lg, --language <LANG>       Language to scan; default: typescript
--tk, --token <NUMBER>        Minimum function size; default: 30 tokens
+-tk, --token <NUMBER>        Minimum function size; default: 30, or 1 with search
 -t,  --threshold <PERCENT>   Similarity percentage; default: 100
 -ig, --ignore <DIR>          Additional directory name to ignore; repeatable
+-s,  --search <NAME>         Show duplicates for matching function names
+-V,  --version               Show the installed version
 -h,  --help                  Show the complete help
 ```
 
 The default ignored directories are `.git`, `target`, and `node_modules`.
+
+Search changes only which duplicate results are displayed; it does not change
+the structural comparison or similarity score. The default threshold remains
+`100`, so search reports exact duplicates unless a lower `--threshold` is
+provided explicitly.
 
 ## Example output
 
@@ -249,6 +280,14 @@ language matches the project:
 
 ```bash
 codesweep ./src -lg ts -tk 10 -t 70
+```
+
+When searching by function name, codesweep prints the number of matching
+function names. A count of zero means the selected language, folder, ignored
+directories, or spelling prevented the function from being found:
+
+```bash
+codesweep ./src -lg ts -s calculateTotal
 ```
 
 ### Generated files make the scan noisy
