@@ -1,8 +1,9 @@
-# codesweep — Fast Duplicate Code Detector
+# codesweep — Fast Codebase Analyzer
 
-**codesweep** is a fast, cross-platform command-line tool for finding duplicate
-and structurally similar functions in TypeScript, JavaScript, Flutter/Dart,
-Kotlin, Swift, Go, and C#/.NET projects.
+**codesweep** is a fast, cross-platform command-line tool for understanding and
+cleaning codebases. It finds duplicate and structurally similar functions in
+TypeScript, JavaScript, Flutter/Dart, Kotlin, Swift, Go, and C#/.NET projects,
+and maps UI hierarchies in React, Flutter, Jetpack Compose, and SwiftUI apps.
 
 Built with Rust and Tree-sitter, codesweep compares syntax structure instead of
 plain text. Formatting, comments, and outer function names do not hide duplicated
@@ -16,6 +17,7 @@ logic.
 - Find near-duplicates with a configurable similarity threshold.
 - Search for a function by name and show only its duplicate implementations.
 - Parse source code accurately with Tree-sitter grammars.
+- Print a whole-project UI tree for React, Flutter, Jetpack Compose, or SwiftUI.
 - Scan large projects using a small native CLI.
 - Ignore generated code, dependencies, and custom directories.
 - Run on macOS, Linux, and Windows without a language runtime.
@@ -182,6 +184,44 @@ search with a lower similarity threshold:
 codesweep ./src -s calculateTotal -t 80
 ```
 
+Print the UI tree for an entire supported application:
+
+```bash
+codesweep ./web-app --widget-tree
+codesweep ./web-app -wt
+codesweep ./web-app -wt --output widget-tree.txt
+codesweep ./web-app -wt --output widget-tree.md
+codesweep ./web-app -wt --copy
+codesweep ./web-app -wt -cp
+codesweep ./flutter-app -lg flutter -wt
+codesweep ./compose-app -lg kotlin -wt
+codesweep ./swiftui-app -lg swift -wt
+```
+
+CodeSweep discovers React components, Flutter widgets, Jetpack Compose
+composables, or SwiftUI views according to `--language`. It follows relative
+default and named imports for React and prints unresolved or framework-provided
+components with a `?` marker. The `--widgettree` spelling is also accepted as an
+alias. Markdown output is wrapped in a `text` code block; clipboard support uses
+the native clipboard command available on macOS, Windows, or Linux. A progress
+indicator is shown while files are scanned and analyzed. Shared components are
+expanded once and marked `(shared)` on later references.
+
+Example Flutter output:
+
+```text
+Flutter widget tree — ./flutter-app
+HomePage
+├── Scaffold (?)
+└── ProductList
+    ├── Column (?)
+    └── ProductCard
+        ├── Card (?)
+        └── Text (?)
+
+Components: 3 | Relationships: 6
+```
+
 Include smaller functions and ignore generated directories:
 
 ```bash
@@ -204,6 +244,10 @@ codesweep [FOLDER] [OPTIONS]
 -t,  --threshold <PERCENT>   Similarity percentage; default: 100
 -ig, --ignore <DIR>          Additional directory name to ignore; repeatable
 -s,  --search <NAME>         Show duplicates for matching function names
+-wt, --widget-tree           Print the UI tree for React, Flutter, Compose, or SwiftUI
+-o,  --output <FILE>         Save the widget tree as text or Markdown
+     --save <FILE>           Alias for --output
+-cp, --copy                  Copy the widget tree to the clipboard
 -V,  --version               Show the installed version
 -h,  --help                  Show the complete help
 ```
@@ -240,6 +284,15 @@ report similar function pairs using structural shingle overlap.
 
 The similarity score is an aid for code review and refactoring; it does not
 claim that two functions are behaviorally equivalent.
+
+## How UI tree analysis works
+
+CodeSweep parses the complete source tree and identifies React components,
+Flutter widget `build` methods, Jetpack Compose `@Composable` functions, or
+SwiftUI types conforming to `View`. It records child UI calls, resolves local
+relationships, detects cycles, and renders the resulting graph as a readable
+tree. Since this is static analysis, runtime-generated or dynamically selected
+UI may appear unresolved.
 
 ## Verify a download
 
